@@ -21,14 +21,14 @@
     <div class="card card-login mx-auto mt-5">
       <div class="card-header"><center><b>Extensão Portal do aluno IFRO - Câmpus Zona Norte</b></center></div>
       <div class="card-body">
-        <form>
+        <form method="post" action="login">
           <div class="form-group">
             <label for="exampleInputEmail1"><b>Endereço de Email</b></label>
-            <input class="form-control" id="exampleInputEmail1" type="email" aria-describedby="emailHelp" placeholder="Ex: davi12@hotmail.com">
+            <input class="form-control" name='email' id='email' type="email" aria-describedby="emailHelp" placeholder="Ex: davi12@hotmail.com">
           </div>
           <div class="form-group">
             <label for="exampleInputPassword1"><b>Senha</b></label>
-            <input class="form-control" id="exampleInputPassword1" type="password" placeholder="Senha">
+            <input class="form-control" name="password" id="password" type="password" placeholder="Senha">
           </div>
           <div class="form-group">
             <div class="form-check">
@@ -36,7 +36,7 @@
                 <input class="form-check-input" type="checkbox"><b>Lembrar Senha</b></label>
             </div>
           </div>
-          <a class="btn btn-primary btn-block" href="index.html">Login</a>
+          <input type="submit" class="btn btn-primary btn-block" name="submit" value="Login">
         </form>
         <div class="text-center">
           <a class="d-block small mt-3" href="register.html">Ainda não é registrado? Registre-se!</a>
