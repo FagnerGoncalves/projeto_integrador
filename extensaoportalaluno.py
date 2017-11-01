@@ -17,10 +17,11 @@ def login():
     if request.method == 'POST':
         email = request.form['email']
         if request.form['password'] == users[email]['password']:
-            user = User()
+            user = User.User()
             user.id = email
             flask_login.login_user(user)
             return redirect(url_for('protected'))
+
 
         return 'Bad login'
 
@@ -32,14 +33,24 @@ def login():
 def protected():
     return 'Logged in as: ' + flask_login.current_user.id
 
+
 @app.route('/')
+@flask_login.login_required
 def index():
-    return '<a href="/login"> Login</a>'
+    return render_template('index.html')
 
 @login_manager.unauthorized_handler
 def unauthorized_handler():
-    return 'Unauthorized'
+    return redirect(url_for('login'))
 
+@login_manager.user_loader
+def user_loader(email):
+    if email not in users:
+        return
+
+    user = User.User()
+    user.id = email
+    return user
 
 if __name__ == '__main__':
     app.run(debug=True)
