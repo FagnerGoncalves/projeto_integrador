@@ -1,6 +1,7 @@
-from flask import Flask,render_template, request, url_for, redirect
+from flask import Flask,render_template, request, url_for, redirect, flash
 import User
 import flask_login
+import time
 
 
 app = Flask(__name__)
@@ -31,7 +32,9 @@ def login():
 @app.route('/protected')
 @flask_login.login_required
 def protected():
-    return 'Logged in as: ' + flask_login.current_user.id
+    flash('Logged in as: ' + flask_login.current_user.id)
+    time.sleep(1)
+    return redirect(url_for('index'))
 
 
 @app.route('/')
@@ -51,6 +54,11 @@ def user_loader(email):
     user = User.User()
     user.id = email
     return user
+
+@app.route('/logout')
+def logout():
+    flask_login.logout_user()
+    return redirect(url_for('login'))
 
 if __name__ == '__main__':
     app.run(debug=True)
