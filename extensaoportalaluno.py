@@ -11,7 +11,7 @@ login_manager = flask_login.LoginManager()
 
 login_manager.init_app(app)
 
-users = {'teste@teste.com': {'password': 'secret'}}
+users = {'irineu@irineu.com': {'password': 'secret'}}
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
