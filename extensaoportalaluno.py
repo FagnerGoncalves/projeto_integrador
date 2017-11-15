@@ -1,17 +1,40 @@
-from flask import Flask,render_template, request, url_for, redirect, flash
-import User
+from flask import Flask, render_template, request, url_for, redirect, flash
+from config import SECURITY_REGISTERABLE, SQLALCHEMY_DATABASE_URI, SQLALCHEMY_TRACK_MODIFICATIONS
+from flask_sqlalchemy import SQLAlchemy
 import flask_login
+import Alunos
 import time
-
+import User
 
 app = Flask(__name__)
+app.secret_key = 'mude isso!'
+db = SQLAlchemy(app)
 app.secret_key = 'super secret string'
+
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = SQLALCHEMY_TRACK_MODIFICATIONS
+app.config['SECURITY_REGISTERABLE'] = SECURITY_REGISTERABLE
+app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
 
 login_manager = flask_login.LoginManager()
 
 login_manager.init_app(app)
 
 users = {'teste@teste.com': {'password': 'secret'}}
+
+@login_manager.request_loader
+def request_loader(request):
+    email = request.form.get('email')
+    if email not in users:
+        return
+
+    user = User.User()
+    user.id = email
+
+    # DO NOT ever store passwords in plaintext and always compare password
+    # hashes using constant-time comparison!
+    user.is_authenticated = request.form['password'] == users[email]['password']
+
+    return user
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -59,6 +82,32 @@ def user_loader(email):
 def logout():
     flask_login.logout_user()
     return redirect(url_for('login'))
+
+@app.route('/criar_tabelas')
+def criar_tabelas():
+    global db
+    db.create_all()
+    flash('criado com sucesso')
+    return redirect(url_for('index'))
+
+@app.route('/remover_tabelas')
+def remover_tabelas():
+    global db
+    db.drop_all()
+    flash('removido com sucesso')
+    return redirect(url_for('index'))
+
+@app.route('/post_user', methods=['POST'])
+def post_user():
+    user = Alunos.User(request.form['username'], request.form['email'])
+    Alunos.db.session.add(user)
+    Alunos.db.session.commit()
+    flash('Usuario criado com sucesso')
+    return redirect(url_for('index'))
+
+@app.route('/admin_add')
+def admin_add():
+    return render_template('admin_add_user.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
