@@ -27,7 +27,7 @@ def request_loader(request):
     email_usu = Alunos.User.query.filter_by(email=email).first()
 
     if email_usu is None:
-        return redirect(url_for('login'))
+        return 
 
     user = User.User()
     user.id = email_usu.email
