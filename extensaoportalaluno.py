@@ -19,28 +19,30 @@ login_manager = flask_login.LoginManager()
 
 login_manager.init_app(app)
 
-users = {'teste@teste.com': {'password': 'secret'}}
+
 
 @login_manager.request_loader
 def request_loader(request):
     email = request.form.get('email')
-    if email not in users:
-        return
+    email_usu = Alunos.User.query.filter_by(email=email).first()
+
+    if email_usu is None:
+        return redirect(url_for('login'))
 
     user = User.User()
-    user.id = email
+    user.id = email_usu.email
 
     # DO NOT ever store passwords in plaintext and always compare password
     # hashes using constant-time comparison!
-    user.is_authenticated = request.form['password'] == users[email]['password']
-
-    return user
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
+
         email = request.form['email']
-        if request.form['password'] == users[email]['password']:
+        email_usu = Alunos.User.query.filter_by(email=email).first()
+
+        if request.form['password'] == email_usu.password:
             user = User.User()
             user.id = email
             flask_login.login_user(user)
@@ -71,7 +73,8 @@ def unauthorized_handler():
 
 @login_manager.user_loader
 def user_loader(email):
-    if email not in users:
+    email_usu = Alunos.User.query.filter_by(email=email).first()
+    if email_usu is None:
         return
 
     user = User.User()
@@ -99,7 +102,7 @@ def remover_tabelas():
 
 @app.route('/post_user', methods=['POST'])
 def post_user():
-    user = Alunos.User(request.form['username'], request.form['email'])
+    user = Alunos.User(request.form['username'], request.form['email'], request.form['password'])
     Alunos.db.session.add(user)
     Alunos.db.session.commit()
     flash('Usuario criado com sucesso')
