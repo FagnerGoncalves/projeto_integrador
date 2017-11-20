@@ -24,13 +24,13 @@ login_manager.init_app(app)
 @login_manager.request_loader
 def request_loader(request):
     email = request.form.get('email')
-    email_usu = Alunos.User.query.filter_by(email=email).first()
+    email_usu = Alunos.Funcionario.query.filter_by(email=email).first()
 
     if email_usu is None:
         return 
 
     user = User.User()
-    user.id = email_usu.email
+    user.id = email
 
     # DO NOT ever store passwords in plaintext and always compare password
     # hashes using constant-time comparison!
@@ -40,7 +40,7 @@ def login():
     if request.method == 'POST':
 
         email = request.form['email']
-        email_usu = Alunos.User.query.filter_by(email=email).first()
+        email_usu = Alunos.Funcionario.query.filter_by(email=email).first()
 
         if request.form['password'] == email_usu.password:
             user = User.User()
@@ -73,7 +73,7 @@ def unauthorized_handler():
 
 @login_manager.user_loader
 def user_loader(email):
-    email_usu = Alunos.User.query.filter_by(email=email).first()
+    email_usu = Alunos.Funcionario.query.filter_by(email=email).first()
     if email_usu is None:
         return
 
@@ -102,7 +102,13 @@ def remover_tabelas():
 
 @app.route('/post_user', methods=['POST'])
 def post_user():
-    user = Alunos.User(request.form['username'], request.form['email'], request.form['password'])
+    user = Alunos.Funcionario(request.form['username'],
+                              request.form['email'],
+                              request.form['password'],
+                              request.form['nome'],
+                              request.form['endereco'],
+                              request.form['cpf'],
+                              request.form['mat_func'])
     Alunos.db.session.add(user)
     Alunos.db.session.commit()
     flash('Usuario criado com sucesso')
@@ -110,7 +116,7 @@ def post_user():
 
 @app.route('/admin_add')
 def admin_add():
-    return render_template('admin_add_user.html')
+    return render_template('')
 
 if __name__ == '__main__':
     app.run(debug=True)
