@@ -1,4 +1,4 @@
-# projeto_integrador
+# Extensão Portal Aluno
 <p>
 &emsp; Nesta pesquisa será desenvolvido um sistema voltado para atender os alunos. Esse
 outro sistema para ifro, almeja proporciona acessibilidade e complementar algumas funções
