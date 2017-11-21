@@ -24,9 +24,9 @@ login_manager.init_app(app)
 @login_manager.request_loader
 def request_loader(request):
     email = request.form.get('email')
-    email_usu = Alunos.Funcionario.query.filter_by(email=email).first()
-
-    if email_usu is None:
+    email_Func = Alunos.Funcionario.query.filter_by(email=email).first()
+    email_Alun = Alunos.Aluno.query.filter_by(email=email).first()
+    if email_Func or email_Alun is None:
         return 
 
     user = User.User()
@@ -40,9 +40,9 @@ def login():
     if request.method == 'POST':
 
         email = request.form['email']
-        email_usu = Alunos.Funcionario.query.filter_by(email=email).first()
-
-        if request.form['password'] == email_usu.password:
+        email_Func = Alunos.Funcionario.query.filter_by(email=email).first()
+        email_Alun = Alunos.Aluno.query.filter_by(email=email).first
+        if request.form['password'] == email_Func.password or request.form['password'] == email_Alun.password:
             user = User.User()
             user.id = email
             flask_login.login_user(user)
@@ -73,8 +73,9 @@ def unauthorized_handler():
 
 @login_manager.user_loader
 def user_loader(email):
-    email_usu = Alunos.Funcionario.query.filter_by(email=email).first()
-    if email_usu is None:
+    email_Func = Alunos.Funcionario.query.filter_by(email=email).first()
+    email_Alun = Alunos.Aluno.query.filter_by(email=email).first
+    if email_Func or email_Alun is None:
         return
 
     user = User.User()
@@ -102,14 +103,24 @@ def remover_tabelas():
 
 @app.route('/post_user', methods=['POST'])
 def post_user():
-    user = Alunos.Funcionario(request.form['username'],
+    user_func = Alunos.Funcionario(request.form['username'],
                               request.form['email'],
                               request.form['password'],
                               request.form['nome'],
                               request.form['endereco'],
                               request.form['cpf'],
                               request.form['mat_func'])
-    Alunos.db.session.add(user)
+
+    user_alun = Alunos.Aluno(request.form['cpf'],
+                              request.form['username'],
+                              request.form['data_nasc'],
+                              request.form['endereco'],
+                              request.form['rg'],
+                              request.form['email'],
+                              request.form['password'])
+
+    Alunos.db.session.add(user_func)
+    Alunos.db.session.add(user_alun)
     Alunos.db.session.commit()
     flash('Usuario criado com sucesso')
     return redirect(url_for('index'))
