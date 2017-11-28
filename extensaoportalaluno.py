@@ -7,9 +7,9 @@ import time
 import User
 
 app = Flask(__name__)
-app.secret_key = 'mude isso!'
+app.secret_key = 'mateus'
 db = SQLAlchemy(app)
-app.secret_key = 'super secret string'
+app.secret_key = 'mateusdelas'
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = SQLALCHEMY_TRACK_MODIFICATIONS
 app.config['SECURITY_REGISTERABLE'] = SECURITY_REGISTERABLE
@@ -24,10 +24,9 @@ login_manager.init_app(app)
 @login_manager.request_loader
 def request_loader(request):
     email = request.form.get('email')
-    email_Func = Alunos.Funcionario.query.filter_by(email=email).first()
-    email_Alun = Alunos.Aluno.query.filter_by(email=email).first()
-    if email_Func or email_Alun is None:
-        return 
+    email_alun = Alunos.Aluno.query.filter_by(email=email).first()
+    if email_alun is None:
+        return
 
     user = User.User()
     user.id = email
@@ -38,18 +37,16 @@ def request_loader(request):
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-
         email = request.form['email']
-        email_Func = Alunos.Funcionario.query.filter_by(email=email).first()
-        email_Alun = Alunos.Aluno.query.filter_by(email=email).first
-        if request.form['password'] == email_Func.password or request.form['password'] == email_Alun.password:
+        email_alun    = Alunos.Aluno.query.filter_by(email=email).first()
+
+        if  request.form['password'] == email_alun.password:
             user = User.User()
             user.id = email
             flask_login.login_user(user)
             return redirect(url_for('protected'))
-
-
-        return 'Bad login'
+        else:
+            return redirect(url_for('login'))
 
     return render_template('login.html')
 
@@ -73,9 +70,9 @@ def unauthorized_handler():
 
 @login_manager.user_loader
 def user_loader(email):
-    email_Func = Alunos.Funcionario.query.filter_by(email=email).first()
-    email_Alun = Alunos.Aluno.query.filter_by(email=email).first
-    if email_Func or email_Alun is None:
+    email_alun = Alunos.Aluno.query.filter_by(email=email).first()
+
+    if email_alun is None:
         return
 
     user = User.User()
@@ -103,31 +100,24 @@ def remover_tabelas():
 
 @app.route('/post_user', methods=['POST'])
 def post_user():
-    user_func = Alunos.Funcionario(request.form['username'],
-                              request.form['email'],
-                              request.form['password'],
-                              request.form['nome'],
-                              request.form['endereco'],
-                              request.form['cpf'],
-                              request.form['mat_func'])
+    user_alun = Alunos.Aluno(request.form['username'],
+                                   request.form['email'],
+                                   request.form['password'],
+                                   request.form['nome'],
+                                   request.form['telefone'],
+                                   request.form['endereco'],
+                                   request.form['cpf'])
 
-    user_alun = Alunos.Aluno(request.form['cpf'],
-                              request.form['username'],
-                              request.form['data_nasc'],
-                              request.form['endereco'],
-                              request.form['rg'],
-                              request.form['email'],
-                              request.form['password'])
 
-    Alunos.db.session.add(user_func)
+
     Alunos.db.session.add(user_alun)
     Alunos.db.session.commit()
     flash('Usuario criado com sucesso')
-    return redirect(url_for('index'))
+    return redirect(url_for('login'))
 
 @app.route('/admin_add')
 def admin_add():
-    return render_template('')
+    return render_template('admin_add_user.html')
 
 if __name__ == '__main__':
     app.run(debug=True)

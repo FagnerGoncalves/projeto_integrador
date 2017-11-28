@@ -39,7 +39,6 @@ class Aluno(db.Model):
         self.cpf      = cpf
 
     func_id  = db.Column(db.Integer, db.ForeignKey('funcionario.id_func'))
-    aluno_id = db.Column(db.Integer, db.ForeignKey('aluno.id_alun'))
 
     funcionario = db.relationship('Funcionario', backref='user_func')
 
@@ -60,7 +59,6 @@ class Curso(db.Model):
         self.qtnd_semestres = qtnd_semestres
 
     aluno_id= db.Column(db.Integer, db.ForeignKey('aluno.id_alun'))
-    curso_id = db.Column(db.Integer, db.ForeignKey('curso.id_curs'))
 
     aluno = db.relationship('Aluno', backref='user_alun')
 
@@ -81,7 +79,6 @@ class Disciplina(db.Model):
         self.nota1_semes = nota1_semes
         self.nota2_semes = nota2_semes
 
-    disciplina_id = db.Column(db.Integer, db.ForeignKey('disciplina.id_disc'))
     curso_id = db.Column(db.Integer, db.ForeignKey('curso.id_curs'))
 
     curso = db.relationship('Curso', backref='user_curs')
@@ -104,7 +101,6 @@ class Professores(db.Model):
     def __repr__(self):
         return '<Funcionario %r %r %r>' % (self.username, self.email, self.password)
 
-    professor_id = db.Column(db.Integer, db.ForeignKey('professores.id_prof'))
     disciplina_id = db.Column(db.Integer, db.ForeignKey('disciplina.id_disc'))
 
     disciplian = db.relationship('Disciplina', backref='user_disc')
@@ -124,7 +120,6 @@ class Acesso(db.Model):
     def __repr__(self):
         return '<Funcionario %r %r %r>' % (self.username, self.email, self.password)
 
-    id_acesso = db.Column(db.Integer, db.ForeignKey('acesso.id_acess'))
     id_professor = db.Column(db.Integer, db.ForeignKey('professores.id_prof'))
 
     Profesores = db.relationship('Professores', backref='user_prof')
